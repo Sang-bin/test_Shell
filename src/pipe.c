@@ -22,7 +22,23 @@ int main(int argc, char** argv)
             perror("execvp of ls failed");
             exit(1);
         }
+        
+        if(fork() == 0)        //creating 2nd child
+        {
+            close(0);          //closing stdin
+            close(1);          //closing stdout
+           // dup(des_p[0]);     //replacing stdout with pipe write
+            dup(des_p[0]);     //replacing stdout with pipe write 
+            
+            close(des_p[0]);
+            close(des_p[1]);   //closing pipe write
 
+            const char* prog2[] = { "grep", ".c", 0};
+            execvp(prog2[0], prog2);
+            perror("execvp of wc failed");
+            exit(1);
+        }
+        
         if(fork() == 0)        //creating 2nd child
         {
             close(0);          //closing stdin
@@ -30,8 +46,8 @@ int main(int argc, char** argv)
             close(des_p[1]);   //closing pipe write
             close(des_p[0]);
 
-            const char* prog2[] = { "wc", "-l", 0};
-            execvp(prog2[0], prog2);
+            const char* prog3[] = { "sort", 0};
+            execvp(prog3[0], prog3);
             perror("execvp of wc failed");
             exit(1);
         }
