@@ -108,7 +108,7 @@ int main(int argc, char **argv)
   close(pipes[0]);
   close(pipes[1]);
   close(pipes[2]);
-  close(pipes[3]);
+  /close(pipes[3]);
 
   for (i = 0; i < 3; i++)
     wait(&status);
