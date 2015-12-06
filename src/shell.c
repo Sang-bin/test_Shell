@@ -3,7 +3,15 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <pwd.h>
+#include <grp.h>
+#include <time.h>
+
 #define MAXARG 7
+
+unsigned long directoryOnFileSize(DIR *,char *);
 
 int main()
 {
@@ -13,6 +21,7 @@ int main()
     char *s;
     char *save;
     int argn;
+	unsigned long size;
     static const char delim[] = " \t\n"; /* 공백, 탭, 개행으로 이루어진 구분자 선언 */
     int pid, status;
 
@@ -27,9 +36,15 @@ int main()
 			args[argn++] = s;
 			s = strtok_r(NULL, delim, &save);
 		}
-       
+		
 		args[argn] = '\0';		/* 인수가 더 없음을 의미하는 문자 추가 */	
-
+		
+		if(!strcmp(args[0],"dirsize")){
+			size = directoryOnFileSize(opendir(path),path);
+			printf("Total Size : %zu\n",size);
+			continue;
+		}
+		
 		if(!strcmp(args[0],"cd")){
 			if(chdir(args[1]))
 			printf("디렉토리 이동 실패\n");	
@@ -50,4 +65,32 @@ int main()
 		}
 	}
     _exit(0);
+}
+
+unsigned long directoryOnFileSize(DIR *dp,char * path){
+	struct dirent *d;
+	struct stat st;
+	char path_temp[BUFSIZ+1];
+	unsigned long sum_size = 0;
+	unsigned long temp = 0;
+	
+	if (dp == NULL) // 디렉터리 열기
+   	   return 0;
+	  
+	while ((d = readdir(dp)) != NULL) { // 디렉터리의 각 파일에 대해
+    		sprintf(path_temp, "%s/%s", path, d->d_name); // 파일경로명 만들기
+     	if (lstat(path_temp, &st) < 0) // 파일 상태 정보 가져오기
+       		return 0;
+		 
+	if(S_ISDIR(st.st_mode)){
+		if((d->d_name[0]) == '.'&& ((d->d_name[1]) == '.' || (d->d_name[1]) == '\0'));
+		else{
+			sum_size += directoryOnFileSize(opendir(path_temp),path_temp);
+		}
+	}
+	sum_size += st.st_size;
+   }
+   
+   closedir(dp);
+   return sum_size;
 }
