@@ -12,30 +12,8 @@
 #define MAXARG 7
 
 unsigned long directoryOnFileSize(DIR *,char *);
-char* order(char *args)
-        if(!strcmp(args,"나가기")){
-			return "exit";
-        }else if(!strcmp(args[0],"목록")){
-			return "ls";
-        }else if(!strcmp(args[0],"이동")){
-			return "cd";
-        }else if(!strcmp(args[0],"삭제")){
-			return "rm";
-        }else if(!strcmp(args[0],"폴더삭제")){
-			return "rmdir";
-		}else if(!strcmp(args[0],"폴더생성")){
-			return "mkdir";
-		}else if(!strcmp(args[0],"내용")){
-			return "cat";
-		}else if(!strcmp(args[0],"복사")){
-			return "cp";
-		}else if(!strcmp(args[0],"이동")){
-			return "mv";
-		}else if(!strcmp(args[0],"파일찾기")){
-			return "find";
-		}else
-			return args;
-}
+char* order(char *args);
+
 int main()
 {
     char buf[256];
@@ -60,29 +38,9 @@ int main()
 			s = strtok_r(NULL, delim, &save);
 		}
 		
-		args[argn] = '\0';		/* 인수가 더 없음을 의미하는 문자 추가 */	
+		args[argn] = '\0';		/* 인수가 더 없음을 의미하는 문자 추가 */
 		
-		if(!strcmp(args[0],"나가기")){
-			args[0] = "exit";
-		}else if(!strcmp(args[0],"목록")){
-			args[0] = "ls";
-		}else if(!strcmp(args[0],"이동")){
-			args[0] = "cd";
-		}else if(!strcmp(args[0],"삭제")){
-			args[0] = "rm";
-		}else if(!strcmp(args[0],"폴더삭제")){
-			args[0] = "rmdir";
-		}else if(!strcmp(args[0],"폴더생성")){
-			args[0] = "mkdir";
-		}else if(!strcmp(args[0],"내용")){
-			args[0] = "cat";
-		}else if(!strcmp(args[0],"복사")){
-			args[0] = "cp";
-		}else if(!strcmdp(args[0],"이동")){
-			args[0] = "mv";
-		}else if(!strcmp(args[0],"파일찾기")){
-			args[0] = "find";
-		}
+		args[0] = order(args[0]);  // 한글 명령어 변경
 		
 		if(!strcmp(args[0],"dirsize")){
 			size = directoryOnFileSize(opendir(path),path);
@@ -90,7 +48,7 @@ int main()
 			continue;
 		}
 		
-		if(!strcmp(args[0],"cd")){
+		if(!strcmp(args[0],"이동")){
 			if(chdir(args[1]))
 			printf("디렉토리 이동 실패\n");	
 			continue;
@@ -138,4 +96,29 @@ unsigned long directoryOnFileSize(DIR *dp,char * path){
    
    closedir(dp);
    return sum_size;
+}
+
+char* order(char *args){
+        if(!strcmp(args,"나가기")){
+			return "exit";
+        }else if(!strcmp(args,"목록")){
+			return "ls";
+        }else if(!strcmp(args,"이동")){
+			return "cd";
+        }else if(!strcmp(args,"삭제")){
+			return "rm";
+        }else if(!strcmp(args,"폴더삭제")){
+			return "rmdir";
+		}else if(!strcmp(args,"폴더생성")){
+			return "mkdir";
+		}else if(!strcmp(args,"내용")){
+			return "cat";
+		}else if(!strcmp(args,"복사")){
+			return "cp";
+		}else if(!strcmp(args,"이동")){
+			return "mv";
+		}else if(!strcmp(args,"파일찾기")){
+			return "find";
+		}else
+			return args;
 }
