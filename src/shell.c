@@ -9,7 +9,7 @@
 #include <grp.h>
 #include <time.h>
 
-#define MAXARG 7
+#define MAXARG 7 //max
 
 char path[BUFSIZ];
 
