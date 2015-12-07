@@ -186,7 +186,7 @@ void ForkCommend(char buf[]){
     	    	s = strtok_r(pipes[i], delim, &save);	/* 문자열에서 delim을 기준으로 단어를 잘라냄 */
     	    	
     	    	if(s == NULL){
-    	    	   break;
+    	    	   exit(1);
     	    	}
     		
     	    	while(s!=NULL) {
@@ -204,7 +204,7 @@ void ForkCommend(char buf[]){
 				
                 execvp(args[0], args);
                 perror(args[0]);
-                break;
+                exit(1);
             }
         }
         
