@@ -11,12 +11,12 @@
 
 #define MAXARG 7
 
-char path[BUFSIZ];
+char path[BUFSIZ]; //현재폴더 위치
 
-unsigned long directoryOnFileSize(DIR *,char path[],int mode);
-char* order(char *args);
-int customCommend(char *args[]);
-void ForkCommend(char buf[]);
+unsigned long directoryOnFileSize(DIR *,char path[],int mode); 	// 디렉토리 사이즈와 안에 있는 파일 갯수
+char* order(char *args);										// 한글을 명령어로 변경
+int customCommend(char *args[]);								// 사용자 명령어
+void ForkCommend(char buf[]);									// 파이프 수정 
 
 int main()
 {
@@ -82,7 +82,7 @@ unsigned long directoryOnFileSize(DIR *dp,char path[],int mode){//mode 1 마스�
 	static int count = 0;
 	
 	if (dp == NULL){ // 디렉터리 열기
-   		fprintf(stderr,"위치에 폴더가 없습니다.");
+   		fprintf(stderr,"위치에 폴더가 없습니다.\n");
    	   return 0;
 	}
 	  
@@ -102,7 +102,8 @@ unsigned long directoryOnFileSize(DIR *dp,char path[],int mode){//mode 1 마스�
    }
    
    if(mode == 1){
-   		fprintf(stdout,"Total count : %d\nTotal Size : %zu\n", count,sum_size);
+   		sprintf( path_temp ,"Total Count : %d\nTotal Size : %zu", count, sum_size);
+   		puts(path_temp);
 		count = 0;
    }
    
@@ -132,6 +133,10 @@ char* order(char *args){
 			return "mv";
 		}else if(!strcmp(args,"파일찾기")){
 			return "find";
+		}else if(!strcmp(args,"프로세스")){
+		 	return "ps";
+		}else if(!strcmp(args,"폴더속성")){
+			return "dirsize";
 		}else
 			return args;
 }
@@ -200,7 +205,7 @@ void ForkCommend(char buf[]){
 				args[0] = order(args[0]);  // 한글 명령어 변경
 				
 				if(customCommend(args))
-					continue;
+					exit(1);
 				
                 execvp(args[0], args);
                 perror(args[0]);
